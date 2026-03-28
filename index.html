@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WhatsApp Bot Pairing</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            max-width: 600px; 
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        input { 
+            padding: 10px; 
+            width: 100%; 
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button { 
+            padding: 10px 20px; 
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover { background: #20BA5A; }
+        
+        #code { 
+            margin: 20px 0; 
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        .pairing-code {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            color: #25D366;
+            font-family: monospace;
+        }
+        
+        #status { 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        .connected { 
+            background: #90EE90; 
+            color: #155724;
+        }
+        .disconnected { 
+            background: #FFB6C6;
+            color: #721c24;
+        }
+        .loading {
+            background: #FFF3CD;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 WhatsApp Bot Pairing</h1>
+        
+        <input type="text" id="phone" placeholder="Enter your phone number (e.g., 92)">
+        <button onclick="generateCode()">Generate Pairing Code</button>
+        
+        <div id="code">
+            <p>Your Pairing Code:</p>
+            <div class="pairing-code" id="pairingCode">--------</div>
+            <p style="color: #666; font-size: 12px;">Enter this code in WhatsApp to pair your account</p>
+        </div>
+        
+        <div id="status" class="disconnected">Status: Disconnected</div>
+    </div>
+
+    <script>
+        async function generateCode() {
+            const phone = document.getElementById('phone').value;
+            if (!phone) {
+                alert('Please enter a phone number');
+                return;
+            }
+            
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = 'Generating code...';
+            statusDiv.className = 'loading';
+            
+            try {
+                const response = await fetch('/api/connect', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('pairingCode').textContent = data.code;
+                    document.getElementById('code').style.display = 'block';
+                    checkStatus();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error generating code: ' + error.message);
+                statusDiv.textContent = 'Status: Error';
+                statusDiv.className = 'disconnected';
+            }
+        }
+        
+        async function checkStatus() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                const statusDiv = document.getElementById('status');
+                
+                if (data.connected) {
+                    statusDiv.textContent = '✓ Connected Successfully';
+                    statusDiv.className = 'connected';
+                } else {
+                    statusDiv.textContent = '⏳ Waiting for connection...';
+                    statusDiv.className = 'loading';
+                }
+            } catch (error) {
+                console.error('Status check error:', error);
+            }
+        }
+        
+        // Check status every 2 seconds
+        setInterval(checkStatus, 2000);
+    </script>
+</body>
+</html>
