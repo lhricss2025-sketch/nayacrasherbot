@@ -1,5 +1,5 @@
 { 
-  "name":"𝐇𝐚𝐧𝐳𝐁𝐨𝐭𝐳",
+  "name":"SenzoBotz",
   "version":"7.1",
   "description":"Bot bug by HanzXD",
   "main":"index.js",
@@ -7,7 +7,7 @@
   "scripts":{
    "start":"node index.js"
     },
-     "author":"𝐇𝐚𝐧𝐳𝐗𝐃 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥",
+     "author":"Senzo Official",
      "license":"MIT",
      "dependencies":{
       "@adiwajshing/keyed-db":"^0.2.4",
@@ -34,6 +34,7 @@
       "path":"^0.12.7",
       "pino":"^7.0.5",
       "url":"^0.11.4",
-      "util":"^0.12.4"
+      "util":"^0.12.4",
+       "express": "^4.18.2"
     }
   }
