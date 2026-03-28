@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NayaCrasherBot — WhatsApp Pairing Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-gray-100 font-inter flex flex-col items-center justify-center px-4 py-12">
+
+  <!-- Background glow blobs -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div class="blob blob-green"></div>
+    <div class="blob blob-emerald"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="relative z-10 text-center mb-10">
+    <div class="flex items-center justify-center gap-3 mb-3">
+      <div class="w-10 h-10 rounded-xl bg-green-500/20 border border-green-500/30 flex items-center justify-center">
+        <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold tracking-tight text-white">NayaCrasherBot</h1>
+    </div>
+    <p class="text-gray-400 text-sm max-w-sm mx-auto">Connect your WhatsApp account using a pairing code — no QR scan needed.</p>
+  </header>
+
+  <!-- Main Card -->
+  <main class="relative z-10 w-full max-w-md">
+    <div class="card rounded-2xl p-8 space-y-6">
+
+      <!-- Status Indicator -->
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-medium text-gray-400 uppercase tracking-widest">Connection Status</span>
+        <div id="status-badge" class="status-badge status-disconnected">
+          <span id="status-dot" class="status-dot"></span>
+          <span id="status-text">Disconnected</span>
+        </div>
+      </div>
+
+      <hr class="border-gray-700/50" />
+
+      <!-- Phone Number Input -->
+      <div class="space-y-2">
+        <label for="phone-input" class="block text-sm font-medium text-gray-300">
+          Phone Number
+        </label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 7V5z"/>
+            </svg>
+          </div>
+          <input
+            id="phone-input"
+            type="tel"
+            placeholder="e.g. 628123456789"
+            class="phone-input w-full pl-10 pr-4 py-3 rounded-xl text-sm font-mono"
+            autocomplete="tel"
+          />
+        </div>
+        <p class="text-xs text-gray-500">Enter your number with country code, no + or spaces (e.g. <span class="text-gray-400 font-mono">628123456789</span>)</p>
+      </div>
+
+      <!-- Generate Button -->
+      <button
+        id="generate-btn"
+        onclick="generatePairingCode()"
+        class="generate-btn w-full py-3 px-6 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 transition-all duration-200"
+      >
+        <svg id="btn-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        <span id="btn-text">Generate Pairing Code</span>
+        <svg id="btn-spinner" class="w-4 h-4 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+      </button>
+
+      <!-- Pairing Code Display -->
+      <div id="code-section" class="hidden">
+        <div class="code-card rounded-xl p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-green-400 uppercase tracking-widest">Your Pairing Code</span>
+            <button onclick="copyCode()" class="copy-btn text-xs text-gray-400 hover:text-white flex items-center gap-1 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+              <span id="copy-label">Copy</span>
+            </button>
+          </div>
+          <div id="pairing-code" class="text-4xl font-mono font-bold text-white tracking-[0.3em] text-center py-2 select-all">
+            ——————
+          </div>
+          <div class="flex items-center justify-between text-xs text-gray-500">
+            <span>Enter this code in WhatsApp → Linked Devices → Link with phone number</span>
+          </div>
+          <div id="timer-bar-wrap" class="space-y-1">
+            <div class="flex justify-between text-xs text-gray-500">
+              <span>Expires in</span>
+              <span id="timer-label">5:00</span>
+            </div>
+            <div class="h-1 bg-gray-700 rounded-full overflow-hidden">
+              <div id="timer-bar" class="h-full bg-green-500 rounded-full transition-all duration-1000" style="width:100%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Steps -->
+        <ol class="mt-4 space-y-2 text-xs text-gray-400">
+          <li class="flex items-start gap-2">
+            <span class="flex-shrink-0 w-5 h-5 rounded-full bg-gray-700 text-gray-300 flex items-center justify-center font-semibold text-[10px]">1</span>
+            Open WhatsApp on your phone
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="flex-shrink-0 w-5 h-5 rounded-full bg-gray-700 text-gray-300 flex items-center justify-center font-semibold text-[10px]">2</span>
+            Go to <strong class="text-gray-300">Settings → Linked Devices → Link a Device</strong>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="flex-shrink-0 w-5 h-5 rounded-full bg-gray-700 text-gray-300 flex items-center justify-center font-semibold text-[10px]">3</span>
+            Tap <strong class="text-gray-300">"Link with phone number instead"</strong> and enter the code above
+          </li>
+        </ol>
+      </div>
+
+      <!-- Error Message -->
+      <div id="error-section" class="hidden">
+        <div class="error-card rounded-xl p-4 flex items-start gap-3">
+          <svg class="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <p id="error-text" class="text-sm text-red-300"></p>
+        </div>
+      </div>
+
+      <!-- Success Message -->
+      <div id="success-section" class="hidden">
+        <div class="success-card rounded-xl p-5 text-center space-y-2">
+          <div class="w-12 h-12 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center mx-auto">
+            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <p class="text-sm font-semibold text-green-300">Successfully Connected!</p>
+          <p class="text-xs text-gray-400">Your WhatsApp account is now linked to the bot.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <p class="text-center text-xs text-gray-600 mt-6">
+      NayaCrasherBot &mdash; Powered by <span class="text-gray-500">@whiskeysockets/baileys</span>
+    </p>
+  </main>
+
+  <script>
+    let currentSessionId = null;
+    let pollInterval = null;
+    let timerInterval = null;
+    const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    function setStatus(state) {
+      const badge = document.getElementById('status-badge');
+      const dot   = document.getElementById('status-dot');
+      const text  = document.getElementById('status-text');
+
+      badge.className = 'status-badge';
+      dot.className   = 'status-dot';
+
+      const map = {
+        disconnected: { badge: 'status-disconnected', text: 'Disconnected' },
+        connecting:   { badge: 'status-connecting',   text: 'Connecting…'  },
+        connected:    { badge: 'status-connected',    text: 'Connected'    },
+        failed:       { badge: 'status-failed',       text: 'Failed'       },
+      };
+
+      const cfg = map[state] || map.disconnected;
+      badge.classList.add(cfg.badge);
+      text.textContent = cfg.text;
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('error-section');
+      document.getElementById('error-text').textContent = msg;
+      el.classList.remove('hidden');
+    }
+
+    function hideError() {
+      document.getElementById('error-section').classList.add('hidden');
+    }
+
+    function setLoading(loading) {
+      const btn     = document.getElementById('generate-btn');
+      const icon    = document.getElementById('btn-icon');
+      const spinner = document.getElementById('btn-spinner');
+      const label   = document.getElementById('btn-text');
+
+      btn.disabled = loading;
+      btn.classList.toggle('opacity-60', loading);
+      btn.classList.toggle('cursor-not-allowed', loading);
+      icon.classList.toggle('hidden', loading);
+      spinner.classList.toggle('hidden', !loading);
+      label.textContent = loading ? 'Generating…' : 'Generate Pairing Code';
+    }
+
+    function startTimer(durationMs) {
+      const bar   = document.getElementById('timer-bar');
+      const label = document.getElementById('timer-label');
+      const start = Date.now();
+      const end   = start + durationMs;
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        const remaining = Math.max(0, end - Date.now());
+        const pct = (remaining / durationMs) * 100;
+        bar.style.width = pct + '%';
+
+        const mins = Math.floor(remaining / 60000);
+        const secs = Math.floor((remaining % 60000) / 1000);
+        label.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+        if (remaining <= 60000) {
+          bar.classList.replace('bg-green-500', 'bg-yellow-500');
+        }
+        if (remaining <= 0) {
+          clearInterval(timerInterval);
+          bar.classList.replace('bg-yellow-500', 'bg-red-500');
+          label.textContent = 'Expired';
+          stopPolling();
+          showError('Pairing code expired. Please generate a new one.');
+        }
+      }, 1000);
+    }
+
+    function stopPolling() {
+      clearInterval(pollInterval);
+      pollInterval = null;
+    }
+
+    async function copyCode() {
+      const code = document.getElementById('pairing-code').textContent.trim();
+      if (!code || code === '——————') return;
+      try {
+        await navigator.clipboard.writeText(code);
+        const lbl = document.getElementById('copy-label');
+        lbl.textContent = 'Copied!';
+        setTimeout(() => { lbl.textContent = 'Copy'; }, 2000);
+      } catch (_) {}
+    }
+
+    // ── Core Logic ────────────────────────────────────────────────────────────
+
+    async function generatePairingCode() {
+      const phone = document.getElementById('phone-input').value.trim().replace(/\D/g, '');
+
+      hideError();
+      document.getElementById('code-section').classList.add('hidden');
+      document.getElementById('success-section').classList.add('hidden');
+
+      if (!phone || phone.length < 7) {
+        showError('Please enter a valid phone number with country code.');
+        return;
+      }
+
+      setLoading(true);
+      setStatus('connecting');
+      stopPolling();
+      clearInterval(timerInterval);
+
+      try {
+        const res  = await fetch('/api/pairing/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone }),
+        });
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Failed to generate pairing code.');
+        }
+
+        currentSessionId = data.sessionId;
+
+        // Display code
+        document.getElementById('pairing-code').textContent = data.code;
+        document.getElementById('code-section').classList.remove('hidden');
+
+        // Reset timer bar colour
+        const bar = document.getElementById('timer-bar');
+        bar.className = 'h-full bg-green-500 rounded-full transition-all duration-1000';
+
+        startTimer(TIMEOUT_MS);
+        startPolling(data.sessionId);
+
+      } catch (err) {
+        setStatus('disconnected');
+        showError(err.message || 'An unexpected error occurred.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function startPolling(sessionId) {
+      pollInterval = setInterval(async () => {
+        try {
+          const res  = await fetch(`/api/pairing/status/${sessionId}`);
+          const data = await res.json();
+
+          if (data.status === 'connected') {
+            stopPolling();
+            clearInterval(timerInterval);
+            setStatus('connected');
+            document.getElementById('code-section').classList.add('hidden');
+            document.getElementById('success-section').classList.remove('hidden');
+          } else if (data.status === 'failed' || data.status === 'expired') {
+            stopPolling();
+            clearInterval(timerInterval);
+            setStatus('failed');
+            showError('Pairing failed or timed out. Please try again.');
+          }
+        } catch (_) {
+          // Network hiccup — keep polling
+        }
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
