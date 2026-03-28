@@ -1,0 +1,39 @@
+{ 
+  "name":"𝐇𝐚𝐧𝐳𝐁𝐨𝐭𝐳",
+  "version":"7.1",
+  "description":"Bot bug by HanzXD",
+  "main":"index.js",
+  "type":"commonjs",
+  "scripts":{
+   "start":"node index.js"
+    },
+     "author":"𝐇𝐚𝐧𝐳𝐗𝐃 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥",
+     "license":"MIT",
+     "dependencies":{
+      "@adiwajshing/keyed-db":"^0.2.4",
+      "@ffmpeg-installer/ffmpeg":"^1.1.0",
+      "@hapi/boom":"^10.0.0",
+      "@whiskeysockets/baileys": "github:ryygantenk/bails",
+      "awesome-phonenumber":"^2.64.0",
+      "axios":"^0.24.0",
+      "chalk":"^4.1.2",
+      "child_process":"^1.0.2",
+      "crypto":"^1.0.1",
+      "file-type":"^16.5.3",
+      "fluent-ffmpeg":"^2.1.2",
+      "sharp": "^0.32.6",
+      "form-data":"^4.0.0",
+      "fs":"0.0.1-security",
+      "fs-extra":"^10.0.0",
+      "https":"^1.0.0",
+      "human-readable":"^0.2.1",
+      "jimp":"^0.16.1",
+      "moment-timezone":"^0.5.34",
+      "node-webpmux":"^3.1.1",
+      "os":"^0.1.2",
+      "path":"^0.12.7",
+      "pino":"^7.0.5",
+      "url":"^0.11.4",
+      "util":"^0.12.4"
+    }
+  }
